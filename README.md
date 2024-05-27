@@ -2,6 +2,8 @@
 
 Face detection and recognition using OpenCV and Dlib and also calculating the False Acceptance Rate (FAR), False Rejection Rate (FRR), False Match Rate (FMR), False Non-Match Rate (FNMR) and accuracy from video data.
 
+## Calculations
+
 ## Installation
 
 Tested on Python 3.8!
@@ -46,6 +48,15 @@ python3 main.py --video_path <path_to_video>
 ```python
 python3 main.py --live --reference_images <path_to_reference_images>
 ```
+
+## How it is working
+**Calculation**
+
+![How it is working](https://github.com/vabulus/face-detection-exercise/blob/master/decision.png?raw=true)
+
+Application logic
+
+![Application Logic](https://github.com/vabulus/face-detection-exercise/blob/master/application-logic.png?raw=true)
 
 ## Tips
 Rename files in a directory with a name and a counter:
