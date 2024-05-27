@@ -6,8 +6,11 @@ Tested on Python 3.8!
 ```
 pip install -r requirements.txt
 ```
-Download the dataset for faces from [here](https://sites.google.com/view/sof-dataset) and place it in the root directory under `/unknown_faces`. 
-
+Download the dataset for faces from [here](https://sites.google.com/view/sof-dataset) and place it in the root directory under `/unknown_faces` with following commands:
+```bash
+curl -L -o unknown_faces.zip https://drive.google.com/file/d/1ufydwhMYtOhxgQuHs9SjERnkX0fXxorO
+unrar e unknown_faces.zip
+```
 
 ## Usage
 ### Extract faces from images
@@ -27,7 +30,7 @@ python3 main.py --video_path <path_to_video>
 ```
 #### For live videos
 ```python
-python3 main.py --live
+python3 main.py --live --reference_images <path_to_reference_images>
 ```
 
 ## License
