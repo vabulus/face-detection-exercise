@@ -85,12 +85,13 @@ def process_frame(frame, known_face_encodings, known_face_names, stranger_face_e
                 y_true.append(1)
                 y_scores.append(1 - face_distances[best_match_index])
             else:
+                # the face is not the expected one, but still under the selected threshold, therefore it's an imposter
                 FP += 1
                 imposters_detected += 1
                 y_true.append(0)
                 y_scores.append(1 - face_distances[best_match_index])
         else:
-            # Check against stranger faces
+            # this time the face is over the threshold and probably a stranger
             face_distances = face_recognition.face_distance(stranger_face_encodings, face_encoding)
             best_match_index = np.argmin(face_distances)
             if face_distances[best_match_index] < threshold:
@@ -160,15 +161,23 @@ def calculate_metrics():
     FRR = FN / (TP + FN) if (TP + FN) != 0 else 0
     FMR = FP / (FP + TN) if (FP + TN) != 0 else 0
     FNMR = FN / (TP + FN) if (TP + FN) != 0 else 0
+    recall = TP / (TP + FN) if (TP + FN) != 0 else 0
 
+    # print all values like tp, fp tn, fn in one line
+    print(f"TP: {TP}, FP: {FP}, TN: {TN}, FN: {FN}", "recall", recall)
+
+    # format prettier e.g. ------
+    print("--------------------------------------------------")
     print(f"Accuracy: {accuracy}")
     print(f"False Acceptance Rate (FAR): {FAR}")
     print(f"False Rejection Rate (FRR): {FRR}")
     print(f"False Match Rate (FMR): {FMR}")
     print(f"False Non-Match Rate (FNMR): {FNMR}")
+    print("--------------------------------------------------")
 
     fpr, tpr, _ = roc_curve(y_true, y_scores)
     roc_auc = auc(fpr, tpr)
+    print(roc_auc)
 
     plt.figure()
     plt.plot(fpr, tpr, color='darkorange', lw=2, label='ROC curve (area = %0.2f)' % roc_auc)
@@ -192,14 +201,14 @@ def main():
     parser.add_argument('--live', action='store_true', help='Use live video feed')
     parser.add_argument('--video_path', type=str, help='Path to recorded video')
     parser.add_argument('--reference_images', type=str, default='reference_faces', help='Path to reference images')
-    parser.add_argument('--stranger_images', type=str, default='stranger_faces', help='Path to stranger images')
+    parser.add_argument('--stranger_images', type=str, default='unknown_faces', help='Path to stranger images')
     args = parser.parse_args()
 
     known_face_encodings, known_face_names = load_faces(args.reference_images, KNOWN_CACHE_FILE)
     stranger_face_encodings, stranger_face_names = load_faces(args.stranger_images, STRANGER_CACHE_FILE)
 
-    expected_name = "fabio"  # This could be parameterized as well
-    threshold = THRESHOLD  # This could be parameterized as well
+    expected_name = "fabio"
+    threshold = THRESHOLD
 
     if args.live:
         video_stream(0, known_face_encodings, known_face_names, stranger_face_encodings, stranger_face_names,
