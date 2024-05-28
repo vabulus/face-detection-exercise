@@ -79,7 +79,7 @@ done
 
 ## Example Results
 ### Determine variables for face detection and recognition (determine_threshold.py)
-![fr-1](images/threshold.png)
+![threshold](images/threshold.png)
 - 223 faces have been recognized from 692 raw images from myself
 - 1747 faces have been recognized from the downloaded dataset
 - the optimal threshold is 0.56 with an accuracy of 0.9944162436548223
