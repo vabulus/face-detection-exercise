@@ -3,6 +3,7 @@ import os
 import pickle
 import face_recognition
 import numpy as np
+import matplotlib.pyplot as plt
 
 # Constants
 KNOWN_CACHE_FILE = "known_face_encodings_cache.pkl"
@@ -70,6 +71,7 @@ def determine_optimal_threshold(y_true, y_scores):
     best_threshold = 0
     best_score = 0
     best_metrics = (0, 0, 0, 0)  # (TP, TN, FP, FN)
+    accuracy_scores = []
 
     for threshold in thresholds:
         y_pred = [1 if score < threshold else 0 for score in y_scores]
@@ -79,10 +81,21 @@ def determine_optimal_threshold(y_true, y_scores):
         fn = sum(1 for yt, yp in zip(y_true, y_pred) if yt == 1 and yp == 0)
 
         accuracy = (tp + tn) / (tp + tn + fp + fn)
+        accuracy_scores.append(accuracy)
         if accuracy > best_score:
             best_score = accuracy
             best_threshold = threshold
             best_metrics = (tp, tn, fp, fn)
+
+    plt.figure(figsize=(10, 6))
+    plt.plot(thresholds, accuracy_scores, label='Accuracy')
+    plt.axvline(best_threshold, color='r', linestyle='--', label=f'Optimal Threshold: {best_threshold:.2f}')
+    plt.xlabel('Threshold')
+    plt.ylabel('Accuracy')
+    plt.title('Accuracy vs. Threshold')
+    plt.legend()
+    plt.grid(True)
+    plt.show()
 
     return best_threshold, best_score, best_metrics
 
