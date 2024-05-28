@@ -38,7 +38,7 @@ def extract_and_save_my_face(image_path, output_dir, reference_encoding, toleran
             print(f"Face in {image_path} did not match the reference image (index {i})")
 
 
-def process_images(input_dir, output_dir, reference_encoding, tolerance=0.7):
+def process_images(input_dir, output_dir, reference_encoding, tolerance):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
@@ -59,6 +59,7 @@ def main():
     parser.add_argument('--images_path', type=str, required=True, help='Path to the directory containing images to process')
     parser.add_argument('--output_path', type=str, required=True, help='Path to the directory to save extracted faces')
     parser.add_argument('--reference_image', type=str, required=True, help='Path to the reference image')
+    parser.add_argument('--tolerance', type=float, default=0.7, help='Tolerance for face comparison')
 
     args = parser.parse_args()
 
@@ -66,7 +67,7 @@ def main():
     reference_image = face_recognition.load_image_file(args.reference_image)
     reference_encoding = face_recognition.face_encodings(reference_image)[0]
 
-    process_images(args.images_path, args.output_path, reference_encoding)
+    process_images(args.images_path, args.output_path, reference_encoding, args.tolerance)
 
 
 if __name__ == "__main__":

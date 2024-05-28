@@ -202,13 +202,15 @@ def main():
     parser.add_argument('--video_path', type=str, help='Path to recorded video')
     parser.add_argument('--reference_images', type=str, default='reference_faces', help='Path to reference images')
     parser.add_argument('--stranger_images', type=str, default='unknown_faces', help='Path to stranger images')
+    parser.add_argument('--expected_name', type=str, default='fabio', help='Expected name')
+    parser.add_argument('--threshold', type=float, default=0.5, help='Threshold for face comparison')
     args = parser.parse_args()
 
     known_face_encodings, known_face_names = load_faces(args.reference_images, KNOWN_CACHE_FILE)
     stranger_face_encodings, stranger_face_names = load_faces(args.stranger_images, STRANGER_CACHE_FILE)
 
-    expected_name = "fabio"
-    threshold = THRESHOLD
+    expected_name = args.expected_name
+    threshold = args.threshold
 
     if args.live:
         video_stream(0, known_face_encodings, known_face_names, stranger_face_encodings, stranger_face_names,
@@ -220,6 +222,7 @@ def main():
         print("Please provide a video source: --live for live video or --video_path <path> for a recorded video")
         exit()
 
+    print("Threshold: ", threshold)
     calculate_metrics()
 
 
