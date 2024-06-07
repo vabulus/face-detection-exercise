@@ -156,6 +156,7 @@ def video_stream(video_source, known_face_encodings, known_face_names, stranger_
 def calculate_metrics():
     global TP, FP, TN, FN, total_faces_detected, imposters_detected, real_faces_detected, y_true, y_scores
 
+    # Calculations with safety checks for zero denominators
     accuracy = (TP + TN) / (TP + FP + TN + FN) if (TP + FP + TN + FN) != 0 else 0
     FAR = FP / (FP + TN) if (FP + TN) != 0 else 0
     FRR = FN / (TP + FN) if (TP + FN) != 0 else 0
@@ -163,10 +164,10 @@ def calculate_metrics():
     FNMR = FN / (TP + FN) if (TP + FN) != 0 else 0
     recall = TP / (TP + FN) if (TP + FN) != 0 else 0
 
-    # print all values like tp, fp tn, fn in one line
-    print(f"TP: {TP}, FP: {FP}, TN: {TN}, FN: {FN}", "recall", recall)
+    # Print all values in one line
+    print(f"TP: {TP}, FP: {FP}, TN: {TN}, FN: {FN}, Recall: {recall}")
 
-    # format prettier e.g. ------
+    # Print metrics in a formatted manner
     print("--------------------------------------------------")
     print(f"Accuracy: {accuracy}")
     print(f"False Acceptance Rate (FAR): {FAR}")
@@ -175,20 +176,25 @@ def calculate_metrics():
     print(f"False Non-Match Rate (FNMR): {FNMR}")
     print("--------------------------------------------------")
 
-    fpr, tpr, _ = roc_curve(y_true, y_scores)
-    roc_auc = auc(fpr, tpr)
-    print(roc_auc)
+    # Compute ROC curve and AUC
+    if len(y_true) > 0 and len(y_scores) > 0:
+        fpr, tpr, _ = roc_curve(y_true, y_scores)
+        roc_auc = auc(fpr, tpr)
+        print(f"ROC AUC: {roc_auc}")
 
-    plt.figure()
-    plt.plot(fpr, tpr, color='darkorange', lw=2, label='ROC curve (area = %0.2f)' % roc_auc)
-    plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
-    plt.xlim([0.0, 1.0])
-    plt.ylim([0.0, 1.05])
-    plt.xlabel('False Positive Rate')
-    plt.ylabel('True Positive Rate')
-    plt.title('Receiver Operating Characteristic')
-    plt.legend(loc="lower right")
-    plt.show()
+        # Plot ROC curve
+        plt.figure()
+        plt.plot(fpr, tpr, color='darkorange', lw=2, label='ROC curve (area = %0.2f)' % roc_auc)
+        plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
+        plt.xlim([0.0, 1.0])
+        plt.ylim([0.0, 1.05])
+        plt.xlabel('False Positive Rate')
+        plt.ylabel('True Positive Rate')
+        plt.title('Receiver Operating Characteristic')
+        plt.legend(loc="lower right")
+        plt.show()
+    else:
+        print("y_true and y_scores must not be empty for ROC calculation")
 
     # Additional statistics
     print(f"Total faces detected: {total_faces_detected}")
